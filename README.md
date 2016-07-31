@@ -21,7 +21,7 @@ spikefinder evaluate a.json b.json
 You can also use this module inside a Python project, for example
 
 ```python
-from spikefinder import load, match
+from spikefinder import load, score
 
 a = load('a.json')
 b = load('b.json')
