@@ -16,14 +16,6 @@ To evaluate a pair of results, just pass two `JSON` files as arguments
 spikefinder evaluate a.json b.json
 ```
 
-And get this output
-
-```
-{"recall": 0.75, "exactness": 0.8333, "combined": 0.8571, "overlap": 0.85, "precision": 1.0}
-```
-
-We assume the inputs are in the following format for spatial regions:
-
 ## use as a module
 
 You can also use this module inside a Python project, for example
@@ -38,10 +30,10 @@ score(a, b)
 
 ## methods
 
-#### `neurofinder.load(file)`
+#### `spikefinder.load(file)`
 
 Load results from a JSON file.
 
-#### `neurofinder.score(a, b)`
+#### `spikefinder.score(a, b)`
 
 Estimate similarity scores between two results.
