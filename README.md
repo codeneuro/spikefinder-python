@@ -2,6 +2,8 @@
 
 > python module for testing spike detection algorithms
 
+WORK IN PROGRESS
+
 This repository contains a module and a CLI for working with spike finding algorithm results. It is used by the [spikefinder](https://github.com/codeneuro/spikefinder) benchmarking challenge to compare ground truth results to results from submitted algorithms.
 
 The included functions compute evaluation statistics. You can use it to compare ground truth against algorithm results and load result files in standard formats, either as a command line tool, or as a module inside a python project (supports Python 2.7 and 3.4).
