@@ -21,7 +21,7 @@ def score(a, b, method='corr'):
       'rank': _rank
     }
     if method not in methods.keys():
-      raise Exception('method not one of: %s' % methods.join(' '))
+      raise Exception('scoring method not one of: %s' % ' '.join(methods.keys()))
 
     func = methods[method]
 
