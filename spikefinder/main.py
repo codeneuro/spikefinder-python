@@ -16,7 +16,7 @@ def load(file):
     """
     return read_csv(file)
         
-def score(a, b, method='corr'):
+def score(a, b, method='corr', downsample=4):
     """
     Estimate similarity score between two reslts.
     """
@@ -34,27 +34,31 @@ def score(a, b, method='corr'):
 
     result = []
     for column in a:
-        result.append(func(a[column], b[column]))
+        x = _downsample(a[column], downsample)
+        y = _downsample(b[column], downsample)
+        naninds = isnan(x) & isnan(y)
+        x = x[~naninds]
+        y = y[~naninds]
+        result.append(func(x, y))
     return result
 
 def _corr(x, y):
     return corrcoef(x, y)[0,1]
 
 def _info(x, y):
-    loglik, info = _infolik(x,y)
-    return info       # this is absolute info gain, we report mean(info)/mean(entropy) across all cells in the paper
+    # this is absolute info gain, we report mean(info)/mean(entropy) across all cells in the paper
+    loglik, info = _infolik(x, y)
+    return info
+
+def _loglik(x, y):
+    loglik, info = _infolik(x, y)
+    return loglik
 
 def _rank(x, y):
-    
-    return spearmanr(x,y,nan_policy='raise').correlation        
+    return spearmanr(x, y).correlation        
 
 def _auc(x, y):
      pass
-
-def _loglik(x, y):
-    
-    loglik, info = _infolik(x,y)
-    return loglik
 
 def _downsample(signal, factor):
     """
@@ -72,21 +76,18 @@ def _downsample(signal, factor):
         
     return convolve(asarray(signal).ravel(), ones(factor), 'valid')[::factor]
     
-    
-def _infolik(spikes,predictions):
-    ''' 
+def _infolik(spikes, predictions):
+    """
     Computes log likelihood of the data and the information gain
     
     adapted from lucas theis, c2s package
     https://github.com/lucastheis/c2s   
-        
-    '''
-    
+    """
     fps = 100    ### THIS OF COURSE HAS TO PASSED SOMEHOW
     factor = 1   ### DITO
     
     # find optimal point-wise monotonic function
-    f = optimize_predictions(predictions,spikes, num_support=10, regularize=5e-8, verbosity=2)
+    f = optimize_predictions(predictions, spikes, num_support=10, regularize=5e-8, verbosity=2)
 
     # for conversion into bit/s
     factor = 1. / factor / log(2.)     
@@ -99,8 +100,6 @@ def _infolik(spikes,predictions):
     entropy= -mean(poisson.logpmf(spikes, firing_rate / fps)) * fps * factor
 
     return loglik, loglik + entropy
-    
-    
     
 def optimize_predictions(predictions, spikes, num_support=10, regularize=5e-8, verbosity=1):
     """
@@ -183,8 +182,8 @@ def optimize_predictions(predictions, spikes, num_support=10, regularize=5e-8, v
 		method='SLSQP',
 		tol=1e-9,
 		constraints=constraints,
-		options={'disp': 1, 'iprint': verbosity})
+		options={'disp': 0, 'iprint': verbosity})
     seterr(invalid=settings['invalid'])
 
-	# construct monotonic piecewise linear function
+    # construct monotonic piecewise linear function
     return interp1d(x, res.x, bounds_error=False, fill_value=res.x[-1])
