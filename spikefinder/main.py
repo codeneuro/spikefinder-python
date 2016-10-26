@@ -33,13 +33,15 @@ def score(a, b, method='corr', downsample=4):
 
     result = []
     for column in a:
-        x = _downsample(a[column], downsample)
-        y = _downsample(b[column], downsample)
-        if not len(x) == len(y):
-            raise Exception('mismatched lengths %s and %s' % (len(x), len(y)))
-        naninds = isnan(x) & isnan(y)
+        x = a[column]
+        y = b[column]
+        naninds = isnan(x) | isnan(y)
         x = x[~naninds]
         y = y[~naninds]
+        x = _downsample(x, downsample)
+        y = _downsample(y, downsample)
+        if not len(x) == len(y):
+            raise Exception('mismatched lengths %s and %s' % (len(x), len(y)))
         result.append(func(x, y))
     return result
 
