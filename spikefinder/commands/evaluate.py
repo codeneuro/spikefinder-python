@@ -1,7 +1,7 @@
 import os
-import json
 import click
-from numpy import mean
+from json import dumps
+from numpy import mean, nanmean
 from .. import load, score
 
 @click.argument('files', nargs=2, metavar='<files: ground truth, estimate>', required=True)
@@ -14,6 +14,6 @@ def evaluate(files):
 
     for method in ['corr', 'rank', 'info', 'loglik']:
       allscores = score(a, b, method=method)
-      scores[method] = mean(allscores)
+      scores[method] = nanmean(allscores)
 
-    print(scores)
+    print(dumps(scores))

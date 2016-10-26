@@ -1,4 +1,3 @@
-
 from scipy import corrcoef
 from scipy.stats import spearmanr
 from numpy import percentile, asarray, arange, zeros, where, repeat, sort, cov, mean, std, ceil
@@ -36,6 +35,8 @@ def score(a, b, method='corr', downsample=4):
     for column in a:
         x = _downsample(a[column], downsample)
         y = _downsample(b[column], downsample)
+        if not len(x) == len(y):
+            raise Exception('mismatched lengths %s and %s' % (len(x), len(y)))
         naninds = isnan(x) & isnan(y)
         x = x[~naninds]
         y = y[~naninds]
@@ -76,14 +77,13 @@ def _downsample(signal, factor):
         
     return convolve(asarray(signal).ravel(), ones(factor), 'valid')[::factor]
     
-def _infolik(spikes, predictions):
+def _infolik(spikes, predictions, fps=25):
     """
     Computes log likelihood of the data and the information gain
     
     adapted from lucas theis, c2s package
     https://github.com/lucastheis/c2s   
     """
-    fps = 100    ### THIS OF COURSE HAS TO PASSED SOMEHOW
     factor = 1   ### DITO
     
     # find optimal point-wise monotonic function
