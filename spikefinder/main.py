@@ -136,7 +136,8 @@ def optimize_predictions(predictions, spikes, num_support=10, regularize=5e-8, v
     # support points of piece-wise linear function
     if num_support > 2:
         F = predictions
-        F = F[F > (max(F) - min(F)) / 100.]
+        if F.sum() > 0:
+            F = F[F > (max(F) - min(F)) / 100.]
         x = list(percentile(F, range(0, 101, num_support)[1:-1]))
         x = asarray([0.] + x + [max(F)])
 
@@ -154,7 +155,7 @@ def optimize_predictions(predictions, spikes, num_support=10, regularize=5e-8, v
         f = interp1d(x, y)
 
         # compute predicted firing rates
-        l = f(predictions) + 1e-16
+        l = f(predictions) + 1e-8
 
         # compute negative log-likelihood (ignoring constants)
         K = mean(l - spikes * log(l))
