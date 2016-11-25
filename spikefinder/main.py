@@ -99,7 +99,7 @@ def _infolik(spikes, predictions, fps=25):
 
     # estimate log-likelihood and marginal entropies
     loglik = mean(poisson.logpmf(spikes, f(predictions))) * fps * factor
-    entropy= -mean(poisson.logpmf(spikes, firing_rate / fps)) * fps * factor
+    entropy = -mean(poisson.logpmf(spikes, firing_rate / fps)) * fps * factor
 
     return loglik, loglik + entropy
     
